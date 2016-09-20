@@ -70,3 +70,11 @@ services:
         options:
           syslog-address: tcp://0.0.0.0:5001
           tag: "web"
+
+  python:
+    build: ./python_ninja
+    links:
+      - rabbit:rabbit
+    depends_on:
+      - rabbit      
+    command: python recieve.py
