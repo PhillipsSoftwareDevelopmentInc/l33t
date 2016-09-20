@@ -13,7 +13,7 @@ namespace Initializer
             using(var connection = factory.CreateConnection())
             using(var channel = connection.CreateModel())
             {
-                channel.QueueDeclare(queue: "test-pdfgen",
+                channel.QueueDeclare(queue: "Pdfgen",
                                     durable: false,
                                     exclusive: false,
                                     autoDelete: false,

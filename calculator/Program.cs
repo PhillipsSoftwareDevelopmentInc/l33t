@@ -15,7 +15,7 @@ namespace Calculator
             using(var connection = factory.CreateConnection())
             using(var channel = connection.CreateModel())
             {
-                channel.QueueDeclare(queue: "test-calculator",
+                channel.QueueDeclare(queue: "Calc",
                                     durable: false,
                                     exclusive: false,
                                     autoDelete: false,

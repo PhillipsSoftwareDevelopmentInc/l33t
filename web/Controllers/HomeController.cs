@@ -67,12 +67,7 @@ namespace Receiptze
                                         exclusive: false,
                                         autoDelete: false,
                                         arguments: null);
-                    channel.QueueDeclare(queue: "Initialized",
-                                        durable: false,
-                                        exclusive: false,
-                                        autoDelete: false,
-                                        arguments: null);
-                    channel.QueueDeclare(queue: "Calced",
+                    channel.QueueDeclare(queue: "Calc",
                                         durable: false,
                                         exclusive: false,
                                         autoDelete: false,
