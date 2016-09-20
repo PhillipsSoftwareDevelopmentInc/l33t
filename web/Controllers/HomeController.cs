@@ -19,6 +19,10 @@ namespace Receiptze
           while (n < 6)
           {
             try{
+
+
+
+
                 var command = new StartBatchCommand{BatchId=DateTime.Now.Second,StartDate=DateTime.Now};
                 var factory = new ConnectionFactory() { HostName = "rabbit", Port = 5672 };
                 using(var connection = factory.CreateConnection())
@@ -40,7 +44,7 @@ namespace Receiptze
                                         exclusive: false,
                                         autoDelete: false,
                                         arguments: null);
-                    channel.QueueDeclare(queue: "Pdfgen",
+                    channel.QueueDeclare(queue: "PdfGeneratedMessage",
                                         durable: false,
                                         exclusive: false,
                                         autoDelete: false,
@@ -117,7 +121,7 @@ namespace Receiptze
                                         exclusive: false,
                                         autoDelete: false,
                                         arguments: null);
-                    channel.QueueDeclare(queue: "Pdfgen",
+                    channel.QueueDeclare(queue: "PdfGeneratedMessage",
                                         durable: false,
                                         exclusive: false,
                                         autoDelete: false,

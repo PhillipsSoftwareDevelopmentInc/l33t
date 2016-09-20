@@ -51,7 +51,7 @@ namespace HelloMvc
                                             exclusive: false,
                                             autoDelete: false,
                                             arguments: null);
-                        channel.QueueDeclare(queue: "Pdfgen",
+                        channel.QueueDeclare(queue: "PdfGeneratedMessage",
                                             durable: false,
                                             exclusive: false,
                                             autoDelete: false,

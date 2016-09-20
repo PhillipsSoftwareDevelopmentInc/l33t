@@ -27,6 +27,13 @@ namespace PdfGen
         public decimal Price {get;set;}
     }
 
+    public class PdfGeneratedMessage{
+        public int BatchId {get;set;}
+        public string AccountId {get;set;}
+        public decimal AccountTotal {get;set;}
+        public DateTime StartDate {get;set;}
+    }
+
     public class Program
     {
         public static void Main()
@@ -54,18 +61,13 @@ namespace PdfGen
         public static void HandleMessage(CalculatedMessage message,IModel channel){
             Console.WriteLine($"Generating PDF for BatchId {message.BatchId} Account {message.AccountId}-{message.Name}");
             var id = Guid.NewGuid();
-            var bucketName = "pdf-gen-demo2";
-            var keyName = $"{id}";
-            var filePath = $"Statement.pdf";
-            AmazonS3Client client = new AmazonS3Client("AKIAJQZIXHU6QWFOGVDQ","O4J4AFaWfjmeYdb430ssKheNBudI6WFNXJCLXVlF",Amazon.RegionEndpoint.USGovCloudWest1);
-            var request = new PutObjectRequest()
-            {   
-                BucketName = bucketName,
-                Key = keyName,
-                FilePath = filePath
-            };
-            Console.WriteLine(client);
-            //var response2 = client.PutObject(request);
+            var properties = channel.CreateBasicProperties();
+            var msg = new PdfGeneratedMessage{BatchId = message.BatchId,AccountId=message.AccountId,StartDate=DateTime.Now,AccountTotal=message.AccountTotal};
+            var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(msg));
+            channel.BasicPublish(exchange: "",
+                                routingKey: "PdfGeneratedMessage",
+                                basicProperties: properties,
+                                body: body);
             Console.WriteLine($"Document {id}.pdf created"); 
         }
 
