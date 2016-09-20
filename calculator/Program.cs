@@ -1,9 +1,11 @@
 using System.IO;
 using System;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System.Text;
+using Newtonsoft.Json;
 
-namespace Initializer
+namespace Calculator
 {
     public class Program
     {

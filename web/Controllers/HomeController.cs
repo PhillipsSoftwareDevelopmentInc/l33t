@@ -2,9 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Text;
 using RabbitMQ.Client;
+using Newtonsoft.Json;
 
 namespace Receiptze
 {
+    public class StartBatchCommand {
+        public int BatchId {get;set;}
+        public DateTime StartDate {get;set;}
+    }
     public class HomeController : Controller
     {
         [HttpGet("/")]
@@ -38,6 +43,35 @@ namespace Receiptze
                 ViewBag.Error = e.Message;
                 return View("NotHealthy");
             }
+        }
+
+        [HttpGet("/Run")]
+        public IActionResult Run(){
+            try{
+                var command = new StartBatchCommand{BatchId=DateTime.Now.Second,StartDate=DateTime.Now};
+                var factory = new ConnectionFactory() { HostName = "rabbit", Port = 5672 };
+                using(var connection = factory.CreateConnection())
+                using(var channel = connection.CreateModel())
+                {
+                    var properties = channel.CreateBasicProperties();
+                    channel.QueueDeclare(queue: "StartBatchCommand",
+                                        durable: false,
+                                        exclusive: false,
+                                        autoDelete: false,
+                                        arguments: null);
+                    var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command));
+                    channel.BasicPublish(exchange: "",
+                                        routingKey: "StartBatchCommand",
+                                        basicProperties: properties,
+                                        body: body);
+                    Console.WriteLine("Sent StartBatchCommand");
+                }
+                return View("Success");
+            }catch(Exception e){
+                Console.WriteLine($"Error sending StartBatchCommand {e.Message}");
+                return View("Error");
+            }
+            
         }
     }
 }
