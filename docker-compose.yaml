@@ -1,45 +1,49 @@
-version: "alpha-bizz"
+version: "2"
 
 services:
-
-  calculator:
-    build: ./calculator
-    links:
-      - rabbit:rabbit
-    depends_on:
-      - rabbit
-    command: RUN COMMAND
-
-  initializer:
-    build: ./initializer
-    links:
-      - rabbit:rabbit
-    depends_on:
-      - rabbit
-    command: RUN COMMAND
-
-  pdfgen:
-    build: ./pdfgen
-    links:
-      - rabbit:rabbit
-    depends_on:
-      - rabbit
-    command: RUN COMMAND
-
   rabbit:
-    image: rabbitmq:latest
+    image: rabbitmq:3-management
+    hostname: "rabbit"
     ports:
       - "15672:15672"
+      - "5672:5672"
+      - "5671:5671"
+      
+  calculator:
+      build: ./calculator
+      links:
+        - rabbit
+      depends_on:
+        - rabbit
+      command: dotnet run
+    
+  initializer:
+      build: ./initializer
+      links:
+        - rabbit
+      depends_on:
+        - rabbit
+      command: dotnet run
+
+  pdfgen:
+      build: ./pdfgen
+      links:
+        - rabbit
+      depends_on:
+        - rabbit
+      command: dotnet run
 
   web:
-    build: ./web
-    expose:
-      - "8000"
-    links:
-      - rabbit:rabbit
-    env_file: .env
-    volumes:
-      - PATH TO STATIC SHIZ
-    depends_on:
-      - rabbit
-    command: RUN COMMAND
+      build: ./web
+      ports:
+        - "5000:5000"
+      links:
+        - rabbit
+      depends_on:
+        - rabbit
+      env_file: .env
+      volumes:
+        - ./web:/code
+      depends_on:
+        - rabbit
+      command: dotnet run --server.urls=http://0.0.0.0:5000

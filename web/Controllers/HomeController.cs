@@ -14,7 +14,7 @@ namespace Receiptze
         public IActionResult Test()
         {
             try{
-                var factory = new ConnectionFactory() { HostName = "localhost", Port = 5672 };
+                var factory = new ConnectionFactory() { HostName = "rabbit", Port = 5672 };
                 using(var connection = factory.CreateConnection())
                 using(var channel = connection.CreateModel())
                 {
