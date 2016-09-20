@@ -50,7 +50,7 @@ namespace Receiptze
             }
           }
           return View("NotHealthy");
-          
+
         }
 
         [HttpGet("/Run")]
@@ -67,6 +67,21 @@ namespace Receiptze
                                         exclusive: false,
                                         autoDelete: false,
                                         arguments: null);
+                    channel.QueueDeclare(queue: "Initialized",
+                                        durable: false,
+                                        exclusive: false,
+                                        autoDelete: false,
+                                        arguments: null);
+                    channel.QueueDeclare(queue: "Calced",
+                                        durable: false,
+                                        exclusive: false,
+                                        autoDelete: false,
+                                        arguments: null);
+                    channel.QueueDeclare(queue: "Pdfgen",
+                                        durable: false,
+                                        exclusive: false,
+                                        autoDelete: false,
+                                        arguments: null);
                     var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command));
                     channel.BasicPublish(exchange: "",
                                         routingKey: "StartBatchCommand",
@@ -79,7 +94,7 @@ namespace Receiptze
                 Console.WriteLine($"Error sending StartBatchCommand {e.Message}");
                 return View("Error");
             }
-            
+
         }
     }
 }

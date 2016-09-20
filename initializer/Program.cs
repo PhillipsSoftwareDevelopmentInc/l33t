@@ -19,7 +19,7 @@ namespace Initializer
             var factory = new ConnectionFactory() { HostName = "rabbit", Port = 5672 };
             using(var connection = factory.CreateConnection())
             {
-                using(var channel = connection.CreateModel())
+              using(var channel = connection.CreateModel())
                 {
                     channel.QueueDeclare(queue: "StartBatchCommand",
                                         durable: false,
@@ -43,7 +43,6 @@ namespace Initializer
                     System.Threading.Thread.Sleep(100000);
                 }
             }
-            
         }
     }
 }
