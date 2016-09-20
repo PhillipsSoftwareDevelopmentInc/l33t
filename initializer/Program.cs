@@ -92,6 +92,7 @@ namespace Initializer
             };
             var properties = channel.CreateBasicProperties();
             foreach(var account in dummyData){
+                Console.WriteLine($"Sending Calc Message for BatchId {message.BatchId} Account {account.AccountId}-{account.Name}");
                 var msg = new CalcMessage{
                     BatchId = message.BatchId,
                     StartDate = message.StartDate,
