@@ -8,6 +8,11 @@ services:
       - "15672:15672"
       - "5672:5672"
       - "5671:5671"
+    logging:
+      driver: syslog
+      options:
+        syslog-address: tcp://0.0.0.0:5001
+        tag: "rabbit"
 
   calculator:
       build: ./calculator
@@ -16,6 +21,11 @@ services:
       depends_on:
         - rabbit
       command: dotnet run
+      logging:
+        driver: syslog
+        options:
+          syslog-address: tcp://0.0.0.0:5001
+          tag: "calculator"
 
   initializer:
       build: ./initializer
@@ -25,10 +35,10 @@ services:
         - rabbit
       command: dotnet run
       logging:
-        driver: "gelf"
+        driver: syslog
         options:
-          gelf-address: udp://0.0.0.0:5001
-          gelf-tag: "initializer"
+          syslog-address: tcp://0.0.0.0:5001
+          tag: "initializer"
 
   pdfgen:
       build: ./pdfgen
@@ -37,6 +47,11 @@ services:
       depends_on:
         - rabbit
       command: dotnet run
+      logging:
+        driver: syslog
+        options:
+          syslog-address: tcp://0.0.0.0:5001
+          tag: "pdfgen"
 
   web:
       build: ./web
@@ -49,6 +64,9 @@ services:
       env_file: .env
       volumes:
         - ./web:/code
-      depends_on:
-        - rabbit
       command: dotnet run --server.urls=http://0.0.0.0:5000
+      logging:
+        driver: syslog
+        options:
+          syslog-address: tcp://0.0.0.0:5001
+          tag: "web"

@@ -13,8 +13,49 @@ namespace Receiptze
     public class HomeController : Controller
     {
         [HttpGet("/")]
-        public IActionResult Index() => View();
-
+        public IActionResult Index()
+        {
+          int n = 1;
+          while (n < 6)
+          {
+            try{
+                var command = new StartBatchCommand{BatchId=DateTime.Now.Second,StartDate=DateTime.Now};
+                var factory = new ConnectionFactory() { HostName = "rabbit", Port = 5672 };
+                using(var connection = factory.CreateConnection())
+                using(var channel = connection.CreateModel())
+                {
+                    var properties = channel.CreateBasicProperties();
+                    channel.QueueDeclare(queue: "StartBatchCommand",
+                                        durable: false,
+                                        exclusive: false,
+                                        autoDelete: false,
+                                        arguments: null);
+                    channel.QueueDeclare(queue: "InitializedMessage",
+                                        durable: false,
+                                        exclusive: false,
+                                        autoDelete: false,
+                                        arguments: null);
+                    channel.QueueDeclare(queue: "CalculatedMessage",
+                                        durable: false,
+                                        exclusive: false,
+                                        autoDelete: false,
+                                        arguments: null);
+                    channel.QueueDeclare(queue: "Pdfgen",
+                                        durable: false,
+                                        exclusive: false,
+                                        autoDelete: false,
+                                        arguments: null);
+                    n = 7;
+                    return View();
+                  }
+                }catch(Exception e){
+                      ViewBag.Error = e.Message;
+                      n++;
+                      return View("NotHealthy");
+                }
+              }
+              return View("NotHealthy");
+            }
         [HttpGet("/Test")]
         public IActionResult Test()
         {
@@ -40,18 +81,17 @@ namespace Receiptze
                                         basicProperties: null,
                                         body: body);
 
-                }
                 n = 7;
                 return View("Healthy");
+              }
             }catch(Exception e){
                 ViewBag.Error = e.Message;
                 n++;
                 return View("NotHealthy");
             }
-          }
-          return View("NotHealthy");
-
         }
+        return View("NotHealthy");
+      }
 
         [HttpGet("/Run")]
         public IActionResult Run(){
