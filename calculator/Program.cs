@@ -43,7 +43,7 @@ namespace Calculator
     {
         public static void Main()
         {
-            Console.WriteLine("Starting Initializer");
+            Console.WriteLine("Starting Calculator");
             var factory = new ConnectionFactory() { HostName = "rabbit", Port = 5672 };
             var channel = GetChannel();
             var consumer = new EventingBasicConsumer(channel);
@@ -60,7 +60,7 @@ namespace Calculator
                             noAck: false,
                             consumer: consumer);
 
-            System.Threading.Thread.Sleep(100000);
+            Console.ReadLine();
         }
 
         public static void HandleMessage(InitializedMessage message,IModel channel){

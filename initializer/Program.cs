@@ -54,7 +54,7 @@ namespace Initializer
                             noAck: false,
                             consumer: consumer);
 
-            System.Threading.Thread.Sleep(100000);
+            Console.ReadLine();
         }
 
         private static IModel GetChannel(){
