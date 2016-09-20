@@ -8,7 +8,7 @@ services:
       - "15672:15672"
       - "5672:5672"
       - "5671:5671"
-      
+
   calculator:
       build: ./calculator
       links:
@@ -16,7 +16,7 @@ services:
       depends_on:
         - rabbit
       command: dotnet run
-    
+
   initializer:
       build: ./initializer
       links:
@@ -24,6 +24,11 @@ services:
       depends_on:
         - rabbit
       command: dotnet run
+      logging:
+        driver: "gelf"
+        options:
+          gelf-address: udp://0.0.0.0:5001
+          gelf-tag: "initializer"
 
   pdfgen:
       build: ./pdfgen
