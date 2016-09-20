@@ -12,13 +12,13 @@ namespace Initializer
         public int BatchId {get;set;}
         public DateTime StartDate {get;set;}
     }
-    public class CalcMessage {
+    public class InitializedMessage {
         public int BatchId {get;set;}
         public DateTime StartDate {get;set;}
         public string AccountId {get;set;}
         public string Name {get;set;}
         public List<TradeData> Trades {get;set;}
-        public CalcMessage ()
+        public InitializedMessage ()
         {
             Trades = new List<TradeData>();
         }
@@ -40,12 +40,6 @@ namespace Initializer
             Console.WriteLine("Starting Initializer");
             var factory = new ConnectionFactory() { HostName = "rabbit", Port = 5672 };
             var channel = GetChannel();
-            
-            channel.QueueDeclare(queue: "StartBatchCommand",
-                                durable: false,
-                                exclusive: false,
-                                autoDelete: false,
-                                arguments: null);
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, ea) =>
             {
@@ -82,7 +76,11 @@ namespace Initializer
                 new AccountData{
                     AccountId = "1010",
                     Name = "Bernie Madoff",
-                    Trades = new List<TradeData>()
+                    Trades = new List<TradeData>{
+                        new TradeData{Quantity = 5,Price = .50m},
+                        new TradeData{Quantity = 3,Price = .25m},
+                        new TradeData{Quantity = 5,Price = 1.73m},
+                    }
                 },
                 new AccountData{
                     AccountId = "9999",
@@ -92,8 +90,8 @@ namespace Initializer
             };
             var properties = channel.CreateBasicProperties();
             foreach(var account in dummyData){
-                Console.WriteLine($"Sending Calc Message for BatchId {message.BatchId} Account {account.AccountId}-{account.Name}");
-                var msg = new CalcMessage{
+                Console.WriteLine($"Sending Initialized Message for BatchId {message.BatchId} Account {account.AccountId}-{account.Name}");
+                var msg = new InitializedMessage{
                     BatchId = message.BatchId,
                     StartDate = message.StartDate,
                     AccountId = account.AccountId,
@@ -102,7 +100,7 @@ namespace Initializer
                 };
                 var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(msg));
                 channel.BasicPublish(exchange: "",
-                                    routingKey: "Calc",
+                                    routingKey: "InitializedMessage",
                                     basicProperties: properties,
                                     body: body);
             }
