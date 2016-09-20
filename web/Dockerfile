@@ -9,8 +9,6 @@ RUN dotnet restore -v Verbose
 COPY . /web
 WORKDIR /web
 
-
 RUN dotnet build
 
-EXPOSE 5000/tcp
 #CMD ["dotnet","run","--server.urls=http://0.0.0.0:5000"]

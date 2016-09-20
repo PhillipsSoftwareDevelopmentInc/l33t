@@ -18,6 +18,9 @@ namespace Receiptze
         [HttpGet("/Test")]
         public IActionResult Test()
         {
+          int n = 1;
+          while (n < 6)
+          {
             try{
                 var factory = new ConnectionFactory() { HostName = "rabbit", Port = 5672 };
                 using(var connection = factory.CreateConnection())
@@ -36,13 +39,18 @@ namespace Receiptze
                                         routingKey: "hello",
                                         basicProperties: null,
                                         body: body);
-                
+
                 }
+                n = 7;
                 return View("Healthy");
             }catch(Exception e){
                 ViewBag.Error = e.Message;
+                n++;
                 return View("NotHealthy");
             }
+          }
+          return View("NotHealthy");
+          
         }
 
         [HttpGet("/Run")]
