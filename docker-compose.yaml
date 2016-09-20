@@ -1,0 +1,45 @@
+version: "alpha-bizz"
+
+services:
+
+  calculator:
+    build: ./calculator
+    links:
+      - rabbit:rabbit
+    depends_on:
+      - rabbit
+    command: RUN COMMAND
+
+  initializer:
+    build: ./initializer
+    links:
+      - rabbit:rabbit
+    depends_on:
+      - rabbit
+    command: RUN COMMAND
+
+  pdfgen:
+    build: ./pdfgen
+    links:
+      - rabbit:rabbit
+    depends_on:
+      - rabbit
+    command: RUN COMMAND
+
+  rabbit:
+    image: rabbitmq:latest
+    ports:
+      - "15672:15672"
+
+  web:
+    build: ./web
+    expose:
+      - "8000"
+    links:
+      - rabbit:rabbit
+    env_file: .env
+    volumes:
+      - PATH TO STATIC SHIZ
+    depends_on:
+      - rabbit
+    command: RUN COMMAND
