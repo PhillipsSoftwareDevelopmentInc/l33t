@@ -73,8 +73,14 @@ services:
 
   python:
     build: ./python_ninja
+    env_file: .env
     links:
       - rabbit:rabbit
     depends_on:
       - rabbit      
-    command: python recieve.py
+    command: python check_me_out.py
+    logging:
+        driver: syslog
+        options:
+          syslog-address: tcp://0.0.0.0:5001
+          tag: "python"
