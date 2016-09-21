@@ -1,0 +1,86 @@
+version: "2"
+
+services:
+  rabbit:
+    image: rabbitmq:3-management
+    hostname: "rabbit"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+      - "5671:5671"
+    logging:
+      driver: syslog
+      options:
+        syslog-address: tcp://0.0.0.0:5001
+        tag: "rabbit"
+
+  calculator:
+      build: ./calculator
+      links:
+        - rabbit
+      depends_on:
+        - rabbit
+      command: dotnet run
+      logging:
+        driver: syslog
+        options:
+          syslog-address: tcp://0.0.0.0:5001
+          tag: "calculator"
+
+  initializer:
+      build: ./initializer
+      links:
+        - rabbit
+      depends_on:
+        - rabbit
+      command: dotnet run
+      logging:
+        driver: syslog
+        options:
+          syslog-address: tcp://0.0.0.0:5001
+          tag: "initializer"
+
+  pdfgen:
+      build: ./pdfgen
+      links:
+        - rabbit
+      depends_on:
+        - rabbit
+      command: dotnet run
+      logging:
+        driver: syslog
+        options:
+          syslog-address: tcp://0.0.0.0:5001
+          tag: "pdfgen"
+
+  web:
+      build: ./web
+      ports:
+        - "5000:5000"
+      links:
+        - rabbit
+      depends_on:
+        - rabbit
+      env_file: .env
+      volumes:
+        - ./web:/code
+      command: dotnet run --server.urls=http://0.0.0.0:5000
+      logging:
+        driver: syslog
+        options:
+          syslog-address: tcp://0.0.0.0:5001
+          tag: "web"
+
+  python:
+    build: ./python_ninja
+    env_file: .env
+    links:
+      - rabbit:rabbit
+    depends_on:
+      - rabbit      
+    command: python check_me_out.py
+    logging:
+        driver: syslog
+        options:
+          syslog-address: tcp://0.0.0.0:5001
+          tag: "python"
